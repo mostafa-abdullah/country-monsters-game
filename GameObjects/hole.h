@@ -1,10 +1,13 @@
 
 class Hole: public GameObject {
 public:
+  double x, z, radius;
+  bool isOccupied;
   Hole(double x, double z, double radius) {
     this->x = x;
     this->z = z;
     this->radius = radius;
+    this->isOccupied = false;
   }
 
   void draw()
@@ -16,7 +19,4 @@ public:
     gluDisk(gluNewQuadric(), 0, this->radius, RESOLUTION, RESOLUTION);
   	glPopMatrix();
   }
-
-private:
-  double x, z, radius;
 };

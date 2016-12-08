@@ -1,8 +1,10 @@
 #include "GL/glut.h"
 #include <bits/stdc++.h>
 #include "config.h"
+#include "constants.h"
 #include "GameObjects/object.h"
 #include "GameObjects/hole.h"
+#include "GameObjects/monster.h"
 #include "GameObjects/field.h"
 
 
@@ -48,7 +50,7 @@ void display(void)
   setupLights();
 	setupCamera();
 
-  (*f).draw();
+  f->draw();
 
   glFlush();
 }
@@ -61,6 +63,9 @@ void keyboardKey(unsigned char k, int x,int y)
 
 void timeFunc(int val)
 {
+  // printf("%d\n", (*f).monsters[0].state);
+  f->update_monsters();
+  // printf("%d\n", (*f).monsters[0].state);
   glutPostRedisplay();
   glutTimerFunc(20,timeFunc,0);
 }
@@ -94,7 +99,7 @@ int main(int argc, char **argv)
   windowWidth = glutGet(GLUT_SCREEN_WIDTH);
   windowHeight = glutGet(GLUT_SCREEN_HEIGHT);
 
-  Field fTemp(5, 5, 10);
+  Field fTemp(5, 5, 10, 5);
   f = &fTemp;
 
   glutFullScreen();
