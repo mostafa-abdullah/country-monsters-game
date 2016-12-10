@@ -6,6 +6,9 @@
 #include "GameObjects/hole.h"
 #include "GameObjects/monster.h"
 #include "GameObjects/field.h"
+#include "GameObjects/Weapons/weapon.hpp"
+#include "GameObjects/Weapons/brick.hpp"
+#include "GameObjects/person.hpp"
 
 
 using namespace std;
@@ -30,6 +33,9 @@ void setupLights() {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightIntensity);
 }
 
+Field* field;
+Person* person;
+
 void setupCamera() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -39,10 +45,8 @@ void setupCamera() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(0, 2.0, 3.0, 0, 2, 0, 0.0, 1.0, 0.0);
+	gluLookAt(person->x, 2, person->z, person->x, 2, person->z - 1, 0.0, 1.0, 0.0);
 }
-
-Field* f;
 
 void display(void)
 {
@@ -50,22 +54,34 @@ void display(void)
   setupLights();
 	setupCamera();
 
-  f->draw();
+  field->draw();
+  Brick b;
+  person->set_weapon(&b);
+  person->draw();
 
   glFlush();
 }
 
 void keyboardKey(unsigned char k, int x,int y)
 {
-
+  if(k == 'w') {
+    person->move(Forward);
+  }
+  else if(k == 'a') {
+    person->move(Left);
+  }
+  else if(k == 's') {
+    person->move(Backward);
+  }
+  else if(k == 'd') {
+    person->move(Right);
+  }
 	glutPostRedisplay();
 }
 
 void timeFunc(int val)
 {
-  // printf("%d\n", (*f).monsters[0].state);
-  f->update_monsters();
-  // printf("%d\n", (*f).monsters[0].state);
+  field->update_monsters();
   glutPostRedisplay();
   glutTimerFunc(20,timeFunc,0);
 }
@@ -100,7 +116,10 @@ int main(int argc, char **argv)
   windowHeight = glutGet(GLUT_SCREEN_HEIGHT);
 
   Field fTemp(5, 5, 10, 5);
-  f = &fTemp;
+  field = &fTemp;
+
+  Person pTemp;
+  person = &pTemp;
 
   glutFullScreen();
   glutDisplayFunc(display);

@@ -96,7 +96,7 @@ public:
     }
 
   }
-vector<Monster> monsters;
+
 private:
   int n;
   int m;
@@ -105,7 +105,7 @@ private:
   int numHoles, numMonsters;
 
   vector<Hole> holes;
-
+  vector<Monster> monsters;
 
   void draw_holes()
   {
