@@ -26,6 +26,7 @@ public:
   	glPopMatrix();
     this->draw_holes();
     this->draw_monsters();
+    this->draw_fired_weapons();
   }
 
   void add_monsters()
@@ -74,6 +75,24 @@ public:
     return freeHoles[rand() % freeHoles.size()];
   }
 
+  void fire_weapon(Weapon* weapon)
+  {
+    weaponsFired.push_back(weapon);
+  }
+
+  void update_field()
+  {
+    update_fired_weapons();
+    update_monsters();
+  }
+
+  void update_fired_weapons()
+  {
+    for(int i = 0; i < weaponsFired.size(); i++) {
+      weaponsFired[i]->move();
+    }
+  }
+
   void update_monsters()
   {
     for(int i = 0; i < numMonsters; i++) {
@@ -94,7 +113,6 @@ public:
         break;
       }
     }
-
   }
 
 private:
@@ -106,6 +124,7 @@ private:
 
   vector<Hole> holes;
   vector<Monster> monsters;
+  vector<Weapon*> weaponsFired;
 
   void draw_holes()
   {
@@ -120,5 +139,12 @@ private:
       if(monsters[i].state != Hiding)
         monsters[i].draw();
     }
+  }
+
+  void draw_fired_weapons()
+  {
+      for(int i = 0; i < weaponsFired.size(); i++) {
+        weaponsFired[i]->draw();
+      }
   }
 };

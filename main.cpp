@@ -6,9 +6,10 @@
 #include "GameObjects/object.h"
 #include "GameObjects/hole.h"
 #include "GameObjects/monster.h"
-#include "GameObjects/field.h"
 #include "GameObjects/Weapons/weapon.hpp"
 #include "GameObjects/Weapons/brick.hpp"
+#include "GameObjects/Weapons/slippers.hpp"
+#include "GameObjects/field.h"
 #include "GameObjects/person.hpp"
 
 
@@ -76,6 +77,12 @@ void keyboardKey(unsigned char k, int x,int y)
   else if(k == 'd') {
     person->move(Right);
   }
+  else if(k == '1') {
+    person->set_weapon(new Brick());
+  }
+  else if(k == '2') {
+    person->set_weapon(new Slippers());
+  }
 	glutPostRedisplay();
 }
 int oldMouseX, oldMouseY;
@@ -119,9 +126,9 @@ void mouseClick(int button, int state, int x, int y)
     isFiring = true;
   }
   else if(state == GLUT_UP) {
-    printf("UPP\n");
     isFiring = false;
-    person->fire_weapon(power);
+    Weapon* weapon = person->fire_weapon(power);
+    field->fire_weapon(weapon);
   }
 }
 
@@ -131,8 +138,7 @@ void timeFunc(int val)
     power += 0.01;
   }
 
-  field->update_monsters();
-  person->move_weapon();
+  field->update_field();
   glutPostRedisplay();
   glutTimerFunc(20,timeFunc,0);
 }

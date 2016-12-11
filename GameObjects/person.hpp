@@ -19,21 +19,23 @@ public:
     vz *= 0.5;
     glPushMatrix();
     glTranslated(this->location->x + vx, this->location->y - 0.5, this->location->z  + vz);
+    glRotated(atan2(vx, vz) * 180 / PI, 0, 1, 0);
     this->weapon->draw();
     glPopMatrix();
   }
 
-  void fire_weapon(double power)
+  Weapon* fire_weapon(double power)
   {
-    printf("%f\n", power);
     double vx, vy, vz;
     getLookAtUnitVector(&vx, &vy, &vz);
+    this->weapon->location = new Point(this->location->x + vx * 0.5, this->location->y - 0.5, this->location->z + vz * 0.5);
     this->weapon->fire(power, vx, vy, vz);
-  }
 
-  void move_weapon()
-  {
-    this->weapon->move();
+    Weapon* returnedWeapon = this->weapon;
+    // TODO instanciate weapon of same type
+    this->weapon = new Slippers();
+
+    return returnedWeapon;
   }
 
   void set_weapon(Weapon* weapon)
@@ -87,7 +89,7 @@ public:
 private:
   void rotateLookVectorVertical(double theta)
   {
-    if(theta > 0 && upAngle() > 90 || theta < 0 && upAngle() < -90)
+    if(theta > 0 && upAngle() > 80 || theta < 0 && upAngle() < -80)
       return;
     Point* p = this->lookAt;
     p->translate(-this->location->x, -this->location->y, -this->location->z);
