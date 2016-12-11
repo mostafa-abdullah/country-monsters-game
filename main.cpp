@@ -49,9 +49,10 @@ bool first = true;
 void display(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearColor(0.6, 0.8, 1, 1);
 
   person->display_score();
-
+  person->display_power();
   glPushMatrix();
   setupLights();
 	setupCamera();
@@ -177,7 +178,7 @@ int main(int argc, char **argv)
   glShadeModel(GL_SMOOTH);
 
   person = new Person();
-  field = new Field(5, 5, 10, 5, person);
+  field = new Field(5, 5, 10, 2, person);
 
   glutMainLoop();
 }

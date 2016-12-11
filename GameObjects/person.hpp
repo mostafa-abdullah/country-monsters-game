@@ -102,6 +102,22 @@ public:
     displayString("SCORE: " + intToString(this->score), -2.7, 2.5, 0, 0, 0);
   }
 
+  void display_power()
+  {
+    glPushMatrix();
+  	glTranslated(0, 2, 0);
+  	glScaled((this->power / 0.5) * 1.3, 0.1, 1);
+  	glBegin(GL_QUADS);
+    glColor3f(0, 1, 0);
+  	glVertex3d(0, 0, -2.5);
+  	glVertex3d(0, 1, -2.5);
+    glColor3f(1, 0, 0);
+  	glVertex3d(1, 1, -2.5);
+  	glVertex3d(1, 0, -2.5);
+  	glEnd();
+    glPopMatrix();
+  }
+
 private:
   void rotateLookVectorVertical(double theta)
   {

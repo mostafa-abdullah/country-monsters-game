@@ -35,7 +35,7 @@ public:
   void add_monsters()
   {
     for(int i = 0; i < numMonsters; i++) {
-      this->monsters.push_back(Monster(100, rand() % 100));
+      this->monsters.push_back(Monster(100, 20 + rand() % 100));
     }
   }
 
@@ -103,11 +103,9 @@ public:
         if(weaponsFired[i]->is_hitting_monster(&monsters[j])) {
           // TODO core dumped once here
           weaponsFired.erase(weaponsFired.begin() + i);
-          this->person->score += monsters[j].score;  
-          /* increase score
-          remove monster
-
-          */
+          this->person->score += monsters[j].score;
+          this->monsters.erase(this->monsters.begin() + j);
+          numMonsters--;
           break;
         }
       }
