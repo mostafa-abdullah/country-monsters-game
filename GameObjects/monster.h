@@ -38,17 +38,17 @@ public:
     }
   }
 
-  void set_state(MonsterState newState)
-  {
-    this->state = newState;
-  }
-
   void move_down() {
     y -= 0.01;
     if(y <= 0) {
       (this->hole)->isOccupied = false;
       this->state = Hiding;
     }
+  }
+
+  void set_state(MonsterState newState)
+  {
+    this->state = newState;
   }
 
   void set_hole(Hole* hole)

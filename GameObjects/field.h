@@ -7,10 +7,10 @@ public:
     this->n = n;
     this->m = m;
 
-    this->width = windowWidth / 20;
-    this->length = windowWidth / 20;
-    this->gamePlayWidth = windowWidth / 100;
-    this->gamePlayLenth = windowHeight / 100;
+    this->width = FieldWidth;
+    this->length = FieldLength;
+    this->gamePlayWidth = FieldWidth - 10;
+    this->gamePlayLength = FieldLength - 10;
     this->numHoles = numHoles;
     this->numMonsters = numMonsters;
     this->person = person;
@@ -45,7 +45,7 @@ public:
     memset(grid, false, sizeof(bool) * this->n * this->m);
 
     double cellWidth = 1.0 * this->gamePlayWidth / this->n;
-    double cellLength = 1.0 * this->gamePlayLenth / this->m;
+    double cellLength = 1.0 * this->gamePlayLength / this->m;
 
     for(int i = 0; i < numHoles; i++) {
       int r, c;
@@ -57,7 +57,7 @@ public:
       grid[r][c] = true;
 
       double x = r * cellWidth + cellWidth / 2 - this->gamePlayWidth / 2.0;
-      double z = c * cellLength + cellLength / 2 - this->gamePlayLenth / 2.0;
+      double z = c * cellLength + cellLength / 2 - this->gamePlayLength / 2.0;
 
       holes.push_back(Hole(x, z, min(cellWidth, cellLength) * 0.3));
     }
@@ -94,16 +94,25 @@ public:
     for(int i = 0; i < weaponsFired.size(); i++) {
       weaponsFired[i]->move();
 
-      if(weaponsFired[i]->is_out_of_field(this->gamePlayWidth, this->gamePlayLenth)) {
-        weaponsFired.erase(weaponsFired.begin() + i);
+      if(weaponsFired[i]->is_out_of_field(this->gamePlayWidth, this->gamePlayLength)) {
+        if(weaponsFired[i]->type == MineType && weaponsFired[i]->location->y < 0) {
+          weaponsFired[i]->location->y = 0;
+          ((Mine*)weaponsFired[i])->readyToBomb = true;
+          weaponsFired[i]->isMoving = false;
+        }
+        else{
+          weaponsFired.erase(weaponsFired.begin() + i);
+        }
       }
 
+      if(weaponsFired[i]->type == MineType)
+        continue;
       // detect collision with monsters
       for(int j = 0; j < numMonsters; j++) {
-        if(weaponsFired[i]->is_hitting_monster(&monsters[j])) {
-          // TODO core dumped once here
-          weaponsFired.erase(weaponsFired.begin() + i);
+        if(weaponsFired[i]->is_hitting_monster(&monsters[j], 0)) {
+          // FIXME core dumped once here
           this->person->score += monsters[j].score;
+          weaponsFired.erase(weaponsFired.begin() + i);
           this->monsters.erase(this->monsters.begin() + j);
           numMonsters--;
           break;
@@ -134,13 +143,38 @@ public:
     }
   }
 
+  void bombMine()
+  {
+    for(int i = 0; i < weaponsFired.size(); i++)
+      if(weaponsFired[i]->type == MineType && ((Mine*)weaponsFired[i])->readyToBomb) {
+        for(int j = 0; j < numMonsters; j++) {
+          if(weaponsFired[i]->is_hitting_monster(&monsters[j], MineRange)) {
+            this->person->score += monsters[j].score;
+            this->monsters.erase(this->monsters.begin() + j);
+            numMonsters--;
+            j--;
+          }
+        }
+        weaponsFired.erase(weaponsFired.begin() + i);
+      }
+  }
+
+  bool person_on_hole()
+  {
+    for(int i = 0; i < numHoles; i++){
+        if(holes[i].location->distance2(*this->person->location) < 5 + EPS)
+          return true;
+    }
+    return false;
+  }
+
 private:
   int n;
   int m;
   int width;
   int length;
   int gamePlayWidth;
-  int gamePlayLenth;
+  int gamePlayLength;
   int numHoles, numMonsters;
 
   vector<Hole> holes;

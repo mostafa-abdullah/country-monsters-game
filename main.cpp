@@ -9,11 +9,19 @@
 #include "GameObjects/Weapons/weapon.hpp"
 #include "GameObjects/Weapons/brick.hpp"
 #include "GameObjects/Weapons/slippers.hpp"
+#include "GameObjects/Weapons/mine.hpp"
 #include "GameObjects/person.hpp"
 #include "GameObjects/field.h"
 
 using namespace std;
 
+/*
+TODO Other Features
+Sounds
+3D Models
+Textures
+Setup Lights
+*/
 void setupLights() {
 	GLfloat ambient[] = { 0.7f, 0.7f, 0.7, 1.0f };
 	GLfloat diffuse[] = { 0.6f, 0.6f, 0.6, 1.0f };
@@ -33,6 +41,7 @@ void setupLights() {
 
 Field* field;
 Person* person;
+bool gameOver = false;
 
 void setupCamera() {
 	glMatrixMode(GL_PROJECTION);
@@ -48,10 +57,13 @@ void setupCamera() {
 bool first = true;
 void display(void)
 {
+	if(gameOver)
+		return;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(0.6, 0.8, 1, 1);
 
   person->display_score();
+	person->display_time();
   person->display_power();
   glPushMatrix();
   setupLights();
@@ -84,6 +96,12 @@ void keyboardKey(unsigned char k, int x,int y)
   else if(k == '2') {
     person->set_weapon(new Slippers());
   }
+	else if(k == '3') {
+		person->set_weapon(new Mine());
+	}
+	else if(k == 'q') {
+		field->bombMine();
+	}
 	glutPostRedisplay();
 }
 int oldMouseX, oldMouseY;
@@ -119,17 +137,13 @@ void mouseMotion(int x, int y)
 	glutPostRedisplay();
 }
 
-double power = 0;
-bool isFiring = false;
 void mouseClick(int button, int state, int x, int y)
 {
   if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
     person->isFiring = true;
   }
   else if(state == GLUT_UP) {
-    person->isFiring = false;
-    Weapon* weapon = person->fire_weapon();
-    field->fire_weapon(weapon);
+    field->fire_weapon(person->fire_weapon());
   }
 }
 
@@ -138,16 +152,14 @@ void timeFunc(int val)
   if(person->isFiring) {
     person->increase_power();
   }
-
+	person->time -= 20;
+	if(person->time <= 0 || field->person_on_hole()){
+		displayString("GAME OVER!!", -0.5, 2.5, 0, 0, 0);
+		gameOver = true;
+	}
   field->update_field();
   glutPostRedisplay();
   glutTimerFunc(20,timeFunc,0);
-}
-
-void specialInput(int k, int x, int y)
-{
-
-	glutPostRedisplay();
 }
 
 int main(int argc, char **argv)
@@ -165,8 +177,7 @@ int main(int argc, char **argv)
   glutKeyboardFunc(keyboardKey);
   glutPassiveMotionFunc(mouseMotion);
   glutMouseFunc(mouseClick);
-  glutSpecialFunc(specialInput);
-  glutTimerFunc(0,timeFunc,0);
+  glutTimerFunc(20,timeFunc,0);
   glutSetCursor(GLUT_CURSOR_NONE);
   glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
@@ -178,7 +189,7 @@ int main(int argc, char **argv)
   glShadeModel(GL_SMOOTH);
 
   person = new Person();
-  field = new Field(5, 5, 10, 2, person);
+  field = new Field(20, 20, 10, 5, person);
 
   glutMainLoop();
 }

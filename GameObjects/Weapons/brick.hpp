@@ -5,6 +5,7 @@ public:
   {
     this->location = new Point(0, 0, 0);
     this->isMoving = false;
+    this->type = BrickType;
   }
 
   void draw()

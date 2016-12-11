@@ -41,7 +41,7 @@ public:
     this->z += dz;
   }
 
-  double distance(Point p)
+  double distance2(Point p)
   {
     return (x - p.x) * (x - p.x) + (y - p.y) * (y - p.y) + (z - p.z) * (z - p.z);
   }

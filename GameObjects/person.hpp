@@ -6,6 +6,8 @@ public:
   bool isFiring;
   double power;
   int score;
+  int time;
+
   Person()
   {
     this->location = new Point(0, 2, 3.5);
@@ -13,6 +15,7 @@ public:
     this->weapon = new Brick();
     this->power = 0;
     this->score = 0;
+    this->time = 300000;
   }
 
   void draw()
@@ -36,10 +39,15 @@ public:
     this->weapon->fire(power, vx, vy, vz);
 
     Weapon* returnedWeapon = this->weapon;
-    // TODO instanciate weapon of same type
-    this->weapon = new Slippers();
-    this->power = 0;
 
+    if(this->weapon->type == SlippersType)
+      this->weapon = new Slippers();
+    else if(this->weapon->type == BrickType)
+      this->weapon = new Brick();
+    else if(this->weapon->type == MineType)
+      this->weapon = new Mine();
+    this->power = 0;
+    this->isFiring = false;
     return returnedWeapon;
   }
 
@@ -60,6 +68,14 @@ public:
     getLookAtUnitVector(&vx, &vy, &vz);
     vx *= 0.1;
     vz *= 0.1;
+
+    Point newLocation = *this->location;
+    newLocation.translate(vx, 0, vz);
+
+    if(this->out_of_field(newLocation)) {
+      return;
+    }
+
     switch (direction) {
       case Up:
       this->location->translate(vx, 0, vz);
@@ -100,6 +116,11 @@ public:
   void display_score()
   {
     displayString("SCORE: " + intToString(this->score), -2.7, 2.5, 0, 0, 0);
+  }
+
+  void display_time()
+  {
+    displayString("TIME: " + intToString(this->time / 1000), 2, 2.5, 0, 0, 0);
   }
 
   void display_power()
@@ -157,5 +178,14 @@ private:
     *vx = tmpVx / norm;
     *vy = tmpVy / norm;
     *vz = tmpVz / norm;
+  }
+
+  bool out_of_field(Point point)
+  {
+    printf("%f %f\n", point.x, point.z);
+    return point.x > FieldWidth / 2.0 - 5
+        || point.x < -FieldWidth / 2.0 + 5
+        || point.z > FieldLength / 2.0 - 5
+        || point.z < -FieldLength / 2.0 + 5;
   }
 };

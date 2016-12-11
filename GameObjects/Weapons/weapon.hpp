@@ -2,6 +2,8 @@ class Weapon: public GameObject {
 public:
   Point* location;
   bool isMoving;
+  WeaponType type;
+
   virtual void fire(double power, double vx, double vy, double vz) = 0;
   virtual void move() = 0;
 
@@ -12,11 +14,13 @@ public:
       || this->location->x > fieldWidth
       || this->location->x < -fieldWidth
       || this->location->z > fieldLength
-      || this->location->z < -fieldLength / 2;
+      || this->location->z < -fieldLength;
   }
 
-  bool is_hitting_monster(Monster* monster)
+  bool is_hitting_monster(Monster* monster, double offset)
   {
-    return this->location->distance(*monster->hole->location) < EPS;
+    Point monsterLocation = *monster->hole->location;
+    monsterLocation.y += monster->y;
+    return this->location->distance2(monsterLocation) < offset + EPS;
   }
 };
