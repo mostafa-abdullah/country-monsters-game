@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 #include "config.h"
 #include "constants.h"
+#include "point.hpp"
 #include "GameObjects/object.h"
 #include "GameObjects/hole.h"
 #include "GameObjects/monster.h"
@@ -45,18 +46,17 @@ void setupCamera() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(person->x, 2, person->z, person->x, 2, person->z - 1, 0.0, 1.0, 0.0);
+	gluLookAt(person->location->x, person->location->y, person->location->z, person->lookAt->x, person->lookAt->y, person->lookAt->z, 0.0, 1.0, 0.0);
 }
-
+bool first = true;
 void display(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   setupLights();
+
 	setupCamera();
 
   field->draw();
-  Brick b;
-  person->set_weapon(&b);
   person->draw();
 
   glFlush();
@@ -65,37 +65,76 @@ void display(void)
 void keyboardKey(unsigned char k, int x,int y)
 {
   if(k == 'w') {
-    person->move(Forward);
+    person->move(Up);
   }
   else if(k == 'a') {
     person->move(Left);
   }
   else if(k == 's') {
-    person->move(Backward);
+    person->move(Down);
   }
   else if(k == 'd') {
     person->move(Right);
   }
 	glutPostRedisplay();
 }
-
-void timeFunc(int val)
-{
-  field->update_monsters();
-  glutPostRedisplay();
-  glutTimerFunc(20,timeFunc,0);
-}
+int oldMouseX, oldMouseY;
 
 void mouseMotion(int x, int y)
 {
+  y = windowHeight - y;
+  if(x > oldMouseX) {
+    person->look(Right);
+  }
+  else if(x < oldMouseX) {
+    person->look(Left);
+  }
+
+  if(y > oldMouseY) {
+    person->look(Up);
+  }
+  else if(y < oldMouseY) {
+    person->look(Down);
+  }
+
+  if(x <= 1 || x >= windowWidth - 1) {
+    glutWarpPointer(windowWidth / 2, y);
+  }
+
+  if(y <= 1 || y >= windowHeight - 1) {
+    glutWarpPointer(x, windowHeight / 2);
+  }
+
+  oldMouseX = x;
+  oldMouseY = y;
 
 	glutPostRedisplay();
 }
 
+double power = 0;
+bool isFiring = false;
 void mouseClick(int button, int state, int x, int y)
 {
+  if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    isFiring = true;
+  }
+  else if(state == GLUT_UP) {
+    printf("UPP\n");
+    isFiring = false;
+    person->fire_weapon(power);
+  }
+}
 
+void timeFunc(int val)
+{
+  if(isFiring && power < 0.5) {
+    power += 0.01;
+  }
 
+  field->update_monsters();
+  person->move_weapon();
+  glutPostRedisplay();
+  glutTimerFunc(20,timeFunc,0);
 }
 
 void specialInput(int k, int x, int y)
@@ -106,29 +145,22 @@ void specialInput(int k, int x, int y)
 
 int main(int argc, char **argv)
 {
-  srand(time(NULL));
-
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   gameID = glutCreateWindow("ACM");
-
+  glutFullScreen();
   windowWidth = glutGet(GLUT_SCREEN_WIDTH);
   windowHeight = glutGet(GLUT_SCREEN_HEIGHT);
 
-  Field fTemp(5, 5, 10, 5);
-  field = &fTemp;
+  srand(time(NULL));
 
-  Person pTemp;
-  person = &pTemp;
-
-  glutFullScreen();
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboardKey);
   glutPassiveMotionFunc(mouseMotion);
   glutMouseFunc(mouseClick);
   glutSpecialFunc(specialInput);
   glutTimerFunc(0,timeFunc,0);
-
+  glutSetCursor(GLUT_CURSOR_NONE);
   glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
   glEnable(GL_DEPTH_TEST);
@@ -136,7 +168,13 @@ int main(int argc, char **argv)
   glEnable(GL_LIGHT0);
   glEnable(GL_NORMALIZE);
   glEnable(GL_COLOR_MATERIAL);
+  Field fTemp(5, 5, 10, 5);
+  field = &fTemp;
+
+  Person pTemp;
+  person = &pTemp;
 
   glShadeModel(GL_SMOOTH);
+
   glutMainLoop();
 }
