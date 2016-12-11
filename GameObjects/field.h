@@ -6,9 +6,11 @@ public:
   {
     this->n = n;
     this->m = m;
-    // TODO set world DIMENSIONS
-    this->width = windowWidth / 200;
-    this->length = windowHeight / 200;
+
+    this->width = windowWidth / 20;
+    this->length = windowWidth / 20;
+    this->gamePlayWidth = windowWidth / 100;
+    this->gamePlayLenth = windowHeight / 100;
     this->numHoles = numHoles;
     this->numMonsters = numMonsters;
 
@@ -41,8 +43,8 @@ public:
     bool grid[this->n][this->m];
     memset(grid, false, sizeof(bool) * this->n * this->m);
 
-    double cellWidth = 1.0 * this->width / this->n;
-    double cellLength = 1.0 * this->length / this->m;
+    double cellWidth = 1.0 * this->gamePlayWidth / this->n;
+    double cellLength = 1.0 * this->gamePlayLenth / this->m;
 
     for(int i = 0; i < numHoles; i++) {
       int r, c;
@@ -53,8 +55,8 @@ public:
       while(grid[r][c]);
       grid[r][c] = true;
 
-      double x = r * cellWidth + cellWidth / 2 - this->width / 2.0;
-      double z = c * cellLength + cellLength / 2 - this->length / 2.0;
+      double x = r * cellWidth + cellWidth / 2 - this->gamePlayWidth / 2.0;
+      double z = c * cellLength + cellLength / 2 - this->gamePlayLenth / 2.0;
 
       holes.push_back(Hole(x, z, min(cellWidth, cellLength) * 0.3));
     }
@@ -90,6 +92,12 @@ public:
   {
     for(int i = 0; i < weaponsFired.size(); i++) {
       weaponsFired[i]->move();
+
+      if(weaponsFired[i]->is_out_of_field(this->gamePlayWidth, this->gamePlayLenth)) {
+        weaponsFired.erase(weaponsFired.begin() + i);
+      }
+
+      // TODO check if weapon collides with monster
     }
   }
 
@@ -120,6 +128,8 @@ private:
   int m;
   int width;
   int length;
+  int gamePlayWidth;
+  int gamePlayLenth;
   int numHoles, numMonsters;
 
   vector<Hole> holes;

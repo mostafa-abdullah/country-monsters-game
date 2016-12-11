@@ -123,19 +123,19 @@ bool isFiring = false;
 void mouseClick(int button, int state, int x, int y)
 {
   if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-    isFiring = true;
+    person->isFiring = true;
   }
   else if(state == GLUT_UP) {
-    isFiring = false;
-    Weapon* weapon = person->fire_weapon(power);
+    person->isFiring = false;
+    Weapon* weapon = person->fire_weapon();
     field->fire_weapon(weapon);
   }
 }
 
 void timeFunc(int val)
 {
-  if(isFiring && power < 0.5) {
-    power += 0.01;
+  if(person->isFiring) {
+    person->increase_power();
   }
 
   field->update_field();

@@ -3,12 +3,15 @@ public:
   Weapon* weapon;
   Point* location;
   Point* lookAt;
+  bool isFiring;
+  double power;
 
   Person()
   {
     this->location = new Point(0, 2, 3.5);
     this->lookAt = new Point(0, 2, 2.5);
     this->weapon = new Brick();
+    this->power = 0;
   }
 
   void draw()
@@ -24,7 +27,7 @@ public:
     glPopMatrix();
   }
 
-  Weapon* fire_weapon(double power)
+  Weapon* fire_weapon()
   {
     double vx, vy, vz;
     getLookAtUnitVector(&vx, &vy, &vz);
@@ -34,8 +37,15 @@ public:
     Weapon* returnedWeapon = this->weapon;
     // TODO instanciate weapon of same type
     this->weapon = new Slippers();
+    this->power = 0;
 
     return returnedWeapon;
+  }
+
+  void increase_power()
+  {
+    if(isFiring && power < 0.5)
+      power += 0.005;
   }
 
   void set_weapon(Weapon* weapon)
