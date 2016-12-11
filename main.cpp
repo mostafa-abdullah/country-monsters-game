@@ -100,7 +100,7 @@ void keyboardKey(unsigned char k, int x,int y)
 		person->set_weapon(new Mine());
 	}
 	else if(k == 'q') {
-		field->bombMine();
+		field->bomb_mines();
 	}
 	glutPostRedisplay();
 }

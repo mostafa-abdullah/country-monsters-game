@@ -20,7 +20,7 @@ public:
     if(readyToBomb) {
       glPushMatrix();
       glRotated(90, 1, 0, 0);
-      gluDisk(gluNewQuadric(), 0, MineRange / 0.13, 50, 50);
+      gluDisk(gluNewQuadric(), MineRange / 0.145 , MineRange / 0.13, 50, 50);
       glPopMatrix();
     }
   	glPopMatrix();

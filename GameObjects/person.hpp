@@ -182,7 +182,6 @@ private:
 
   bool out_of_field(Point point)
   {
-    printf("%f %f\n", point.x, point.z);
     return point.x > FieldWidth / 2.0 - 5
         || point.x < -FieldWidth / 2.0 + 5
         || point.z > FieldLength / 2.0 - 5

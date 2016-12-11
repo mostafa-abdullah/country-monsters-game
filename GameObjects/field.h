@@ -143,7 +143,7 @@ public:
     }
   }
 
-  void bombMine()
+  void bomb_mines()
   {
     for(int i = 0; i < weaponsFired.size(); i++)
       if(weaponsFired[i]->type == MineType && ((Mine*)weaponsFired[i])->readyToBomb) {
@@ -156,6 +156,7 @@ public:
           }
         }
         weaponsFired.erase(weaponsFired.begin() + i);
+        i--;
       }
   }
 
