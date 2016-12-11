@@ -14,4 +14,9 @@ public:
       || this->location->z > fieldLength
       || this->location->z < -fieldLength / 2;
   }
+
+  bool is_hitting_monster(Monster* monster)
+  {
+    return this->location->distance(*monster->hole->location) < EPS;
+  }
 };

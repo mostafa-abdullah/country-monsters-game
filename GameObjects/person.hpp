@@ -5,13 +5,14 @@ public:
   Point* lookAt;
   bool isFiring;
   double power;
-
+  int score;
   Person()
   {
     this->location = new Point(0, 2, 3.5);
     this->lookAt = new Point(0, 2, 2.5);
     this->weapon = new Brick();
     this->power = 0;
+    this->score = 0;
   }
 
   void draw()
@@ -94,6 +95,11 @@ public:
       this->rotateLookVectorHorizontal(-5);
       break;
     }
+  }
+
+  void display_score()
+  {
+    displayString("SCORE: " + intToString(this->score), -2.7, 2.5, 0, 0, 0);
   }
 
 private:

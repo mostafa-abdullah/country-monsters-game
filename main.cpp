@@ -9,14 +9,10 @@
 #include "GameObjects/Weapons/weapon.hpp"
 #include "GameObjects/Weapons/brick.hpp"
 #include "GameObjects/Weapons/slippers.hpp"
-#include "GameObjects/field.h"
 #include "GameObjects/person.hpp"
-
+#include "GameObjects/field.h"
 
 using namespace std;
-
-#define intToString( x ) static_cast< std::ostringstream & >( \
-        ( std::ostringstream() << std::dec << x ) ).str()
 
 void setupLights() {
 	GLfloat ambient[] = { 0.7f, 0.7f, 0.7, 1.0f };
@@ -53,12 +49,16 @@ bool first = true;
 void display(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  setupLights();
 
+  person->display_score();
+
+  glPushMatrix();
+  setupLights();
 	setupCamera();
 
   field->draw();
   person->draw();
+  glPopMatrix();
 
   glFlush();
 }
@@ -174,13 +174,10 @@ int main(int argc, char **argv)
   glEnable(GL_LIGHT0);
   glEnable(GL_NORMALIZE);
   glEnable(GL_COLOR_MATERIAL);
-  Field fTemp(5, 5, 10, 5);
-  field = &fTemp;
-
-  Person pTemp;
-  person = &pTemp;
-
   glShadeModel(GL_SMOOTH);
+
+  person = new Person();
+  field = new Field(5, 5, 10, 5, person);
 
   glutMainLoop();
 }

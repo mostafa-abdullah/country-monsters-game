@@ -18,7 +18,7 @@ public:
     glColor3d(0.0f,0.0f,1.0f);
   	glPushMatrix();
     Hole h = *(this->hole);
-    glTranslated(h.x, y - 0.51, h.z);
+    glTranslated(h.location->x, y - 0.51, h.location->z);
     glScaled(0.1, 1, 0.1);
     glutSolidCube(1);
   	glPopMatrix();

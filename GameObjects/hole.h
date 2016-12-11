@@ -1,11 +1,11 @@
 
 class Hole: public GameObject {
 public:
-  double x, z, radius;
+  Point* location;
+  double radius;
   bool isOccupied;
   Hole(double x, double z, double radius) {
-    this->x = x;
-    this->z = z;
+    this->location = new Point(x, 0, z);
     this->radius = radius;
     this->isOccupied = false;
   }
@@ -14,7 +14,7 @@ public:
   {
     glColor3d(0.0f,0.0f,0.0f);
   	glPushMatrix();
-    glTranslated(this->x, 0, this->z);
+    glTranslated(this->location->x, this->location->y, this->location->z);
     glRotated(90, 1, 0, 0);
     gluDisk(gluNewQuadric(), 0, this->radius, RESOLUTION, RESOLUTION);
   	glPopMatrix();

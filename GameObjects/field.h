@@ -2,7 +2,7 @@ using namespace std;
 
 class Field: public GameObject {
 public:
-  Field(int n, int m, int numHoles, int numMonsters)
+  Field(int n, int m, int numHoles, int numMonsters, Person* person)
   {
     this->n = n;
     this->m = m;
@@ -13,6 +13,7 @@ public:
     this->gamePlayLenth = windowHeight / 100;
     this->numHoles = numHoles;
     this->numMonsters = numMonsters;
+    this->person = person;
 
     this->add_holes();
     this->add_monsters();
@@ -97,7 +98,19 @@ public:
         weaponsFired.erase(weaponsFired.begin() + i);
       }
 
-      // TODO check if weapon collides with monster
+      // detect collision with monsters
+      for(int j = 0; j < numMonsters; j++) {
+        if(weaponsFired[i]->is_hitting_monster(&monsters[j])) {
+          // TODO core dumped once here
+          weaponsFired.erase(weaponsFired.begin() + i);
+          this->person->score += monsters[j].score;  
+          /* increase score
+          remove monster
+
+          */
+          break;
+        }
+      }
     }
   }
 
@@ -135,6 +148,8 @@ private:
   vector<Hole> holes;
   vector<Monster> monsters;
   vector<Weapon*> weaponsFired;
+
+  Person* person;
 
   void draw_holes()
   {
