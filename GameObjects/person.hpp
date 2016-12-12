@@ -20,6 +20,7 @@ public:
     this->score = 0;
     this->time = 300000;
     this->isFiring = false;
+    this->isMovingUp = false;
 
     ammo.reserve(3);
     this->ammo[BrickType] = MAX_AMMO;
@@ -86,6 +87,8 @@ public:
 
   void move(Direction direction)
   {
+    this->move_vertically();
+
     double vx, vy, vz;
     getLookAtUnitVector(&vx, &vy, &vz);
     vx *= 0.1;
@@ -179,6 +182,26 @@ public:
   }
 
 private:
+  bool isMovingUp;
+
+  void move_vertically()
+  {
+    if(this->isMovingUp) {
+      this->location->translate(0, 0.05, 0);
+      this->lookAt->translate(0, 0.05, 0);
+      if(this->location->y > 2.4) {
+        this->isMovingUp = false;
+      }
+    }
+    else {
+      this->location->translate(0, -0.05, 0);
+      this->lookAt->translate(0, -0.05, 0);
+      if(this->location->y < 2) {
+        this->isMovingUp = true;
+      }
+    }
+  }
+
   void rotateLookVectorVertical(double theta)
   {
     if(theta > 0 && upAngle() > 80 || theta < 0 && upAngle() < -80)
