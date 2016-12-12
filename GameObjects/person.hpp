@@ -91,31 +91,31 @@ public:
     vx *= 0.1;
     vz *= 0.1;
 
+    double tmp;
+    switch (direction) {
+      case Down:
+      vx *= -1;
+      vz *= -1;
+      break;
+      case Left:
+      tmp = vx;
+      vx = vz;
+      vz = -tmp;
+      break;
+      case Right:
+      tmp = vx;
+      vx = -vz;
+      vz = tmp;
+      break;
+    }
     Point newLocation = *this->location;
     newLocation.translate(vx, 0, vz);
-
     if(this->out_of_field(newLocation)) {
       return;
     }
 
-    switch (direction) {
-      case Up:
-      this->location->translate(vx, 0, vz);
-      this->lookAt->translate(vx, 0, vz);
-      break;
-      case Down:
-      this->location->translate(-vx, 0, -vz);
-      this->lookAt->translate(-vx, 0, -vz);
-      break;
-      case Left:
-      this->location->translate(vz, 0, -vx);
-      this->lookAt->translate(vz, 0, -vx);
-      break;
-      case Right:
-      this->location->translate(-vz, 0, vx);
-      this->lookAt->translate(-vz, 0, vx);
-      break;
-    }
+    this->location->translate(vx, 0, vz);
+    this->lookAt->translate(vx, 0, vz);
   }
 
   void look(Direction direction) {
