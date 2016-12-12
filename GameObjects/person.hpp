@@ -1,3 +1,5 @@
+using namespace std;
+
 class Person: public GameObject {
 public:
   Weapon* weapon;
@@ -7,6 +9,7 @@ public:
   double power;
   int score;
   int time;
+  vector<int> ammo;
 
   Person()
   {
@@ -16,6 +19,12 @@ public:
     this->power = 0;
     this->score = 0;
     this->time = 300000;
+    this->isFiring = false;
+
+    ammo.reserve(3);
+    this->ammo[BrickType] = MAX_AMMO;
+    this->ammo[SlippersType] = MAX_AMMO;
+    this->ammo[MineType] = MAX_AMMO;
   }
 
   void draw()
@@ -27,12 +36,21 @@ public:
     glPushMatrix();
     glTranslated(this->location->x + vx, this->location->y - 0.5, this->location->z  + vz);
     glRotated(atan2(vx, vz) * 180 / PI, 0, 1, 0);
-    this->weapon->draw();
+    WeaponType type = weapon->type;
+    if(this->ammo[type] > 0) {
+      this->weapon->draw();
+    }
     glPopMatrix();
   }
 
   Weapon* fire_weapon()
   {
+    this->isFiring = false;
+    WeaponType type = weapon->type;
+    if(this->ammo[type] <= 0) {
+      return NULL;
+    }
+    this->ammo[type]--;
     double vx, vy, vz;
     getLookAtUnitVector(&vx, &vy, &vz);
     this->weapon->location = new Point(this->location->x + vx * 0.5, this->location->y - 0.5, this->location->z + vz * 0.5);
@@ -47,19 +65,23 @@ public:
     else if(this->weapon->type == MineType)
       this->weapon = new Mine();
     this->power = 0;
-    this->isFiring = false;
     return returnedWeapon;
   }
 
   void increase_power()
   {
+    WeaponType type = weapon->type;
+    if(this->ammo[type] <= 0) {
+      return;
+    }
+
     if(isFiring && power < 0.5)
       power += 0.005;
   }
 
   void set_weapon(Weapon* weapon)
   {
-    this->weapon = weapon;
+      this->weapon = weapon;
   }
 
   void move(Direction direction)
@@ -69,31 +91,30 @@ public:
     vx *= 0.1;
     vz *= 0.1;
 
+    double tmp;
+    switch (direction) {
+      case Down:
+      vx *= -1;
+      vz *= -1;
+      break;
+      case Left:
+      tmp = vx;
+      vx = vz;
+      vz = -tmp;
+      break;
+      case Right:
+      tmp = vx;
+      vx = -vz;
+      vz = tmp;
+      break;
+    }
     Point newLocation = *this->location;
     newLocation.translate(vx, 0, vz);
-
     if(this->out_of_field(newLocation)) {
       return;
     }
-
-    switch (direction) {
-      case Up:
-      this->location->translate(vx, 0, vz);
-      this->lookAt->translate(vx, 0, vz);
-      break;
-      case Down:
-      this->location->translate(-vx, 0, -vz);
-      this->lookAt->translate(-vx, 0, -vz);
-      break;
-      case Left:
-      this->location->translate(vz, 0, -vx);
-      this->lookAt->translate(vz, 0, -vx);
-      break;
-      case Right:
-      this->location->translate(-vz, 0, vx);
-      this->lookAt->translate(-vz, 0, vx);
-      break;
-    }
+    this->location->translate(vx, 0, vz);
+    this->lookAt->translate(vx, 0, vz);
   }
 
   void look(Direction direction) {
@@ -113,6 +134,13 @@ public:
     }
   }
 
+  bool is_hitting_pickup(Pickup p)
+  {
+    Point weaponLocation = *this->location;
+    weaponLocation.z -= 0.5;
+    return weaponLocation.distance2(*p.location) < EPS * 3;
+  }
+
   void display_score()
   {
     displayString("SCORE: " + intToString(this->score), -2.7, 2.5, 0, 0, 0);
@@ -121,6 +149,17 @@ public:
   void display_time()
   {
     displayString("TIME: " + intToString(this->time / 1000), 2, 2.5, 0, 0, 0);
+  }
+
+  void display_ammo()
+  {
+    WeaponType type = weapon->type;
+    if(this->ammo[type] <= 0) {
+      displayString("You have no ammo for this weapon.", -2, 2.5, 255, 0, 0);
+    }
+    else {
+      displayString("Ammo: " + intToString(this->ammo[type]), -2, 2.5, 255, 0, 0);
+    }
   }
 
   void display_power()

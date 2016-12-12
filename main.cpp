@@ -6,6 +6,7 @@
 #include "GameObjects/object.h"
 #include "GameObjects/hole.h"
 #include "GameObjects/monster.h"
+#include "GameObjects/pickup.hpp"
 #include "GameObjects/Weapons/weapon.hpp"
 #include "GameObjects/Weapons/brick.hpp"
 #include "GameObjects/Weapons/slippers.hpp"
@@ -65,6 +66,7 @@ void display(void)
   person->display_score();
 	person->display_time();
   person->display_power();
+	person->display_ammo();
   glPushMatrix();
   setupLights();
 	setupCamera();
@@ -157,6 +159,9 @@ void timeFunc(int val)
 		displayString("GAME OVER!!", -0.5, 2.5, 0, 0, 0);
 		gameOver = true;
 	}
+
+	field->show_pickup_if_possible();
+
   field->update_field();
   glutPostRedisplay();
   glutTimerFunc(20,timeFunc,0);
