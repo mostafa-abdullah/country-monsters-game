@@ -65,6 +65,7 @@ void display(void)
   person->display_score();
 	person->display_time();
   person->display_power();
+	person->display_ammo();
   glPushMatrix();
   setupLights();
 	setupCamera();

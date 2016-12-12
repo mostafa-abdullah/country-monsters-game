@@ -4,3 +4,4 @@ enum WeaponType {BrickType, SlippersType, MineType};
 const double PI = acos(-1);
 const double GRAVITY = -0.002;
 const double EPS = 0.5;
+const int MAX_AMMO = 10;

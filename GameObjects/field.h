@@ -80,6 +80,8 @@ public:
 
   void fire_weapon(Weapon* weapon)
   {
+    if(weapon == NULL)
+      return;
     weaponsFired.push_back(weapon);
   }
 
