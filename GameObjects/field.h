@@ -113,6 +113,11 @@ public:
     for(int i = 0; i < pickups.size(); i++)
     {
       pickups[i].rotate();
+      if(person->is_hitting_pickup(pickups[i])) {
+        person->ammo[person->weapon->type]+= 5;
+        pickups.erase(pickups.begin() + i);
+        i--;
+      }
     }
   }
 

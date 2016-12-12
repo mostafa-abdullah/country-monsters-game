@@ -6,11 +6,11 @@
 #include "GameObjects/object.h"
 #include "GameObjects/hole.h"
 #include "GameObjects/monster.h"
+#include "GameObjects/pickup.hpp"
 #include "GameObjects/Weapons/weapon.hpp"
 #include "GameObjects/Weapons/brick.hpp"
 #include "GameObjects/Weapons/slippers.hpp"
 #include "GameObjects/Weapons/mine.hpp"
-#include "GameObjects/pickup.hpp"
 #include "GameObjects/person.hpp"
 #include "GameObjects/field.h"
 

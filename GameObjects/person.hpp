@@ -113,7 +113,6 @@ public:
     if(this->out_of_field(newLocation)) {
       return;
     }
-
     this->location->translate(vx, 0, vz);
     this->lookAt->translate(vx, 0, vz);
   }
@@ -133,6 +132,13 @@ public:
       this->rotateLookVectorHorizontal(-5);
       break;
     }
+  }
+
+  bool is_hitting_pickup(Pickup p)
+  {
+    Point weaponLocation = *this->location;
+    weaponLocation.z -= 0.5;
+    return weaponLocation.distance2(*p.location) < EPS * 3;
   }
 
   void display_score()
