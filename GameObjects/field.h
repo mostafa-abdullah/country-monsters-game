@@ -13,6 +13,7 @@ public:
     this->gamePlayLength = FieldLength - 10;
     this->numHoles = numHoles;
     this->numMonsters = numMonsters;
+    this->pickupTime = TIME_TO_PICKUP;
     this->person = person;
 
     this->add_holes();
@@ -27,6 +28,7 @@ public:
   	glScaled(this->width, 1, this->length);
   	glutSolidCube(1);
   	glPopMatrix();
+    this->draw_pickups();
     this->draw_holes();
     this->draw_monsters();
     this->draw_fired_weapons();
@@ -85,10 +87,33 @@ public:
     weaponsFired.push_back(weapon);
   }
 
+  void show_pickup_if_possible()
+  {
+    if(pickupTime > 0) {
+      pickupTime--;
+      return;
+    }
+
+    pickupTime = TIME_TO_PICKUP;
+    double x = -gamePlayWidth / 2.0 + rand() % gamePlayWidth;
+    double z = -gamePlayLength / 2.0 + rand() % gamePlayLength;
+    Pickup p(x, z);
+    pickups.push_back(p);
+  }
+
   void update_field()
   {
     update_fired_weapons();
     update_monsters();
+    update_pickups();
+  }
+
+  void update_pickups()
+  {
+    for(int i = 0; i < pickups.size(); i++)
+    {
+      pickups[i].rotate();
+    }
   }
 
   void update_fired_weapons()
@@ -178,10 +203,11 @@ private:
   int length;
   int gamePlayWidth;
   int gamePlayLength;
-  int numHoles, numMonsters;
+  int numHoles, numMonsters, pickupTime;
 
   vector<Hole> holes;
   vector<Monster> monsters;
+  vector<Pickup> pickups;
   vector<Weapon*> weaponsFired;
 
   Person* person;
@@ -205,6 +231,13 @@ private:
   {
       for(int i = 0; i < weaponsFired.size(); i++) {
         weaponsFired[i]->draw();
+      }
+  }
+
+  void draw_pickups()
+  {
+      for(int i = 0; i < pickups.size(); i++) {
+        pickups[i].draw();
       }
   }
 };
